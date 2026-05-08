@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Diego Alan Casanova Medina — Data Analyst</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0e0e;
+      --surface: #161616;
+      --border: #2a2a2a;
+      --accent: #c8f542;
+      --accent2: #42f5c8;
+      --text: #e8e8e8;
+      --muted: #666;
+      --card: #131313;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.4;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(14,14,14,0.85);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 8rem 3rem 4rem;
+      gap: 4rem;
+      position: relative;
+    }
+    .hero-grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.3;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+    }
+    .hero-left { position: relative; z-index: 1; }
+    .hero-tag {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 0.3rem 0.8rem;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.2s forwards;
+    }
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.8rem, 5vw, 4.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.4s forwards;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero-desc {
+      color: var(--muted);
+      max-width: 420px;
+      margin-bottom: 2.5rem;
+      font-size: 13px;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.6s forwards;
+    }
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.8s forwards;
+    }
+    .btn {
+      padding: 0.75rem 1.8rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #0e0e0e;
+    }
+    .btn-primary:hover { background: #d4ff55; transform: translateY(-2px); }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* hero right — stats */
+    .hero-right {
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      animation: fadeUp 0.6s 1s forwards;
+    }
+    .stats-box {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 2rem;
+      position: relative;
+    }
+    .stats-box::before {
+      content: ' SKILLS';
+      position: absolute;
+      top: -10px; left: 1rem;
+      background: var(--bg);
+      padding: 0 0.5rem;
+      font-size: 11px;
+      color: var(--accent2);
+    }
+    .skill-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .skill-row:last-child { border-bottom: none; }
+    .skill-name { color: var(--text); font-size: 13px; }
+    .skill-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .skill-bar {
+      width: 120px;
+      height: 3px;
+      background: var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .skill-bar-fill {
+      position: absolute;
+      top: 0; left: 0; height: 100%;
+      background: var(--accent);
+      animation: barGrow 1s 1.2s both;
+      transform-origin: left;
+    }
+    .skill-pct { font-size: 11px; color: var(--muted); width: 30px; text-align: right; }
+
+    @keyframes barGrow {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
+    /* ── SECTION SHARED ── */
+    section { padding: 6rem 3rem; }
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      letter-spacing: -0.02em;
+      margin-bottom: 3rem;
+      line-height: 1.1;
+    }
+
+    /* ── PROJECTS ── */
+    #projects { background: var(--surface); }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5px;
+      background: var(--border);
+    }
+    .project-card {
+      background: var(--card);
+      padding: 2.5rem;
+      position: relative;
+      transition: background 0.2s;
+      overflow: hidden;
+    }
+    .project-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s;
+    }
+    .project-card:hover { background: #1a1a1a; }
+    .project-card:hover::after { transform: scaleX(1); }
+    .project-number {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+    }
+    .project-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      margin-bottom: 0.8rem;
+      letter-spacing: -0.02em;
+    }
+    .project-desc {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 1.5rem;
+      line-height: 1.8;
+    }
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .tag {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .tag.accent { border-color: var(--accent); color: var(--accent); }
+    .project-insights {
+      border-left: 2px solid var(--accent);
+      padding-left: 1rem;
+    }
+    .project-insights p {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+    .project-insights p::before { content: '→ '; color: var(--accent); }
+
+    /* ── ABOUT ── */
+    #about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+    .about-text p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 1rem;
+      line-height: 1.9;
+    }
+    .about-text p span { color: var(--accent); }
+    .tools-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+    }
+    .tool-item {
+      background: var(--surface);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .tool-name { font-size: 13px; color: var(--text); }
+    .tool-desc { font-size: 11px; color: var(--muted); }
+
+    /* ── CONTACT ── */
+    #contact {
+      background: var(--surface);
+      text-align: center;
+    }
+    #contact .section-title { margin-bottom: 1rem; }
+    #contact p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 2.5rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2rem 3rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1rem; }
+      .hero { grid-template-columns: 1fr; padding: 7rem 1.5rem 3rem; gap: 3rem; }
+      section { padding: 4rem 1.5rem; }
+      #about { grid-template-columns: 1fr; gap: 3rem; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo">DACM</div>
+    <div class="nav-links">
+      <a href="#projects">Projects</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-left">
+      <div class="hero-tag">Data Analyst · Junior</div>
+      <h1>Diego Alan<br/><em>Casanova Medina</em></h1>
+      <p class="hero-desc">
+        Industrial Engineering graduate turning raw data into clear decisions.
+        Skilled in SQL, Power BI, and Excel.
+      </p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn btn-primary">View Projects</a>
+        <a href="#contact" class="btn btn-outline">Get in Touch</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="stats-box">
+        <div class="skill-row">
+          <span class="skill-name">MySQL</span>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar"><div class="skill-bar-fill" style="width:75%"></div></div>
+            <span class="skill-pct">75%</span>
+          </div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-name">Power BI</span>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar"><div class="skill-bar-fill" style="width:72%;animation-delay:1.3s"></div></div>
+            <span class="skill-pct">78%</span>
+          </div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-name">Excel</span>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar"><div class="skill-bar-fill" style="width:85%;animation-delay:1.4s"></div></div>
+            <span class="skill-pct">85%</span>
+          </div>
+        </div>
+               <div class="skill-row">
+          <span class="skill-name">Industrial Engineering</span>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar"><div class="skill-bar-fill" style="width:90%;animation-delay:1.6s"></div></div>
+            <span class="skill-pct">90%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-label"> portfolio</div>
+    <div class="section-title">Selected Projects</div>
+    <div class="projects-grid">
+
+      <!-- Project 1 -->
+      <div class="project-card">
+        <div class="project-number">01 / Excel</div>
+        <div class="project-title">Superstore Sales Dashboard</div>
+        <p class="project-desc">
+          Interactive Excel dashboard built with pivot tables and dynamic charts.
+          Analyzed 9,994 orders across product categories and U.S. regions to surface
+          actionable sales insights.
+        </p>
+        <div class="project-tags">
+          <span class="tag accent">Excel</span>
+          <span class="tag">Pivot Tables</span>
+          <span class="tag">Data Visualization</span>
+          <span class="tag">Sales Analysis</span>
+        </div>
+        <div class="project-insights">
+          <p>Technology leads all categories at $825K (36% of total)</p>
+          <p>West & East regions account for 62% of revenue</p>
+          <p>Phones & Chairs are the top sub-categories</p>
+        </div>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="project-card">
+        <div class="project-number">02 / SQL</div>
+        <div class="project-title">Sales Query Analysis</div>
+        <p class="project-desc">
+          MySQL analysis of retail dataset using GROUP BY, HAVING, subqueries,
+          and aggregate functions. Identified top customers, regional performance,
+          and high-value segments.
+        </p>
+        <div class="project-tags">
+          <span class="tag accent">MySQL</span>
+          <span class="tag">Subqueries</span>
+          <span class="tag">Aggregations</span>
+          <span class="tag">HAVING</span>
+        </div>
+        <div class="project-insights">
+          <p>Sean Miller identified as top customer ($25K)</p>
+          <p>Technology leads in every single region</p>
+          <p>High-value customer segment isolated via subquery</p>
+        </div>
+      </div>
+
+      <!-- Project 3 -->
+      <div class="project-card">
+        <div class="project-number">03 / Power BI</div>
+        <div class="project-title">Interactive BI Dashboard</div>
+        <p class="project-desc">
+          Power BI report with dynamic slicers, KPI cards, and cross-filtering visuals.
+          Enables drill-down by customer segment, region, and product category
+          with real-time filter interaction.
+        </p>
+        <div class="project-tags">
+          <span class="tag accent">Power BI</span>
+          <span class="tag">DAX</span>
+          <span class="tag">Data Modeling</span>
+          <span class="tag">Slicers</span>
+        </div>
+        <div class="project-insights">
+          <p>3 interactive visuals with cross-filter capability</p>
+          <p>Segment slicer: Consumer, Corporate, Home Office</p>
+          <p>KPI card showing $2.26M total revenue at a glance</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-text">
+      <div class="section-label"> about</div>
+      <div class="section-title">Background &<br/>Approach</div>
+      <p>
+        I'm an <span>Industrial Engineering graduate</span> interested in process improvement and data-driven decision making. 
+I enjoy analyzing information, organizing workflows, and building reports that help teams track performance and solve operational problems.
+      <p>
+        I work with <span>SQL, Power BI, and Excel.</span> I'm looking for roles in operations, logistics, supply chain, or anywhere data drives real decisions.
+      </p>
+      <p>
+        Currently based in <span>Mexico</span>, open to remote opportunities and
+        relocation.
+      </p>
+    </div>
+    <div>
+      <div class="tools-grid">
+        <div class="tool-item">
+          <span class="tool-name">MySQL</span>
+          <span class="tool-desc">Joins · Subqueries · Triggers · Aggregations</span>
+        </div>
+        <div class="tool-item">
+          <span class="tool-name">Power BI</span>
+          <span class="tool-desc">Data modeling · DAX · Visualizations</span>
+        </div>
+        <div class="tool-item">
+          <span class="tool-name">Excel</span>
+          <span class="tool-desc">Pivot tables · Dashboards · Formulas</span>
+        </div>
+<div class="tool-item">
+  <span class="tool-name">AutoCAD</span>
+  <span class="tool-desc">2D drafting · Technical drawing · Design</span>
+</div>
+<div class="tool-item">
+  <span class="tool-name">Blender</span>
+  <span class="tool-desc">3D modeling · Rendering · Visualization</span>
+</div>
+<div class="tool-item">
+  <span class="tool-name">SolidWorks</span>
+  <span class="tool-desc">3D modeling · Part design · Assembly</span>
+</div>
+        <div class="tool-item">
+          <span class="tool-name">Ind. Engineering</span>
+          <span class="tool-desc">Process optimization · Lean · Statistics</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="section-label"> contact</div>
+    <div class="section-title">Let's Work Together</div>
+    <p>
+      I’m open to new opportunities and professional collaborations. Feel free to contact me via email or phone.
+    </p>
+    <div class="contact-links">
+      <a href="mailto:new.alan.casanova@gmail.com" class="btn btn-primary">new.alan.casanova@gmail.com</a>
+<a href="tel:+528713339321" class="btn btn-outline">+52 871 333 9321</a>
+<a href="https://github.com/diegomedina-source" target="_blank" class="btn btn-outline">GitHub</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 Diego Alan Casanova Medina</span>
+    <span>Industrial Engineer · Data Analyst</span>
+  </footer>
+
+</body>
+</html>
